@@ -1,0 +1,159 @@
+  body {
+    /*padding-top: 50px;*/
+    padding-bottom: 20px;
+    /*font-family: "Andale Mono", "Courier", "Courier New", mono;*/
+    font-family: 'Merriweather Sans', sans-serif;
+  }
+  /* Set widths on the navbar form inputs since otherwise they're 100% wide */
+  .navbar-form input[type="text"],
+  .navbar-form input[type="password"] {
+    width: 180px;
+  }
+  /* Wrapping element */
+  /* Set some basic padding to keep content from hitting the edges */
+  .body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-top: 300px;
+  }
+  .jumbotron {
+      /*margin-top: 20px;*/
+      height:300px;
+    }
+  .lastupdate { font-size:0.70em; }
+  .jumbotron p.notes { font-size:0.60em; color:#999999; }
+  .jumbotron {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 100px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+  }
+  .jumbotron {
+    text-align: center;
+    border-bottom: 1px solid #e5e5e5;
+    background: #000000;
+    /*background: #000 url('http://burak-arikan.com/wp-content/uploads/2013/04/Artist-Collector-Network-phase3-BorusanContemporary-2013-Burak-Arikan-closeup-1024x655.jpg') no-repeat center center;*/
+    /*background: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.65) 100%), url('assets/img/Artist-Collector-Network-phase3-BorusanContemporary-2013-Burak-Arikan-closeup-1024x655.jpg') no-repeat center center;*/
+  }
+  .jumbotron {
+  /*  background: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0.49) 99%, rgba(0,0,0,0.5) 100%), url('assets/img/Artist-Collector-Network-phase3-BorusanContemporary-2013-Burak-Arikan-closeup-1024x655.jpg') no-repeat center center;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(22%,rgba(0,0,0,0)), color-stop(99%,rgba(0,0,0,0.49)), color-stop(100%,rgba(0,0,0,0.5))), url('assets/img/Artist-Collector-Network-phase3-BorusanContemporary-2013-Burak-Arikan-closeup-1024x655.jpg') no-repeat center center;
+    background: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0.49) 99%,rgba(0,0,0,0.5) 100%), url('assets/img/Artist-Collector-Network-phase3-BorusanContemporary-2013-Burak-Arikan-closeup-1024x655.jpg') no-repeat center center;
+    background: -o-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0.49) 99%,rgba(0,0,0,0.5) 100%), url('assets/img/Artist-Collector-Network-phase3-BorusanContemporary-2013-Burak-Arikan-closeup-1024x655.jpg') no-repeat center center;
+    background: -ms-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0.49) 99%,rgba(0,0,0,0.5) 100%), url('assets/img/Artist-Collector-Network-phase3-BorusanContemporary-2013-Burak-Arikan-closeup-1024x655.jpg') no-repeat center center;
+    background: linear-gradient(to bottom,  rgba(0,0,0,0) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0.49) 99%,rgba(0,0,0,0.5) 100%), url('assets/img/Artist-Collector-Network-phase3-BorusanContemporary-2013-Burak-Arikan-closeup-1024x655.jpg') no-repeat center center;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#80000000',GradientType=0 ), url('assets/img/Artist-Collector-Network-phase3-BorusanContemporary-2013-Burak-Arikan-closeup-1024x655.jpg') no-repeat center center;
+    background-size: cover;*/
+  }
+  .jumbotron .btn {
+    /*font-size: 21px;
+    padding: 14px 24px;*/
+  }
+  .jumbotron h1 {
+    color: #FFF;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 56px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin: 20px 0 20px;
+    /*text-shadow: 2px 2px #999;*/
+  }
+  .jumbotron h2, .jumbotron p {
+    color: #FFF;
+    font-family: "Helvetica Neue",Helvetica,"pragmatica-web",Arial,sans-serif;
+  }
+
+  ul {
+    margin: 0;
+  }
+  li {
+    list-style: none;
+    margin-bottom:20px;
+  }
+  .col img {
+    border: 1px solid #ccc;
+  }
+  .body-content h2, .body-content h3, .body-content h4 {
+    font-weight: 400;
+    font-family: 'Merriweather Sans', sans-serif;
+  }
+  .body-content h2 a {
+    font-size:28px;
+    padding-right:44px;
+    color:#000000;
+  }
+  .body-content h3 {
+    line-height: 120%;
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
+  .body-content h4 {
+    line-height: 120%;
+    margin-top: 30px;
+  }
+  .body-content p {
+    font-size: 13px;
+    line-height: 1.8em;
+  }
+  .emphasis{
+    text-decoration: underline;
+  }
+  .row {
+    margin-bottom: 20px;
+  }
+  /*.faq {
+    font-family: 'Merriweather Sans', sans-serif;
+  }*/
+  footer{
+    margin-top:20px;
+    margin-bottom:40px;
+    padding-top:20px;
+    border-top:1px dashed #999999;
+  }
+  .btn-small {
+    margin-bottom:5px;
+  }
+
+   /* Responsive: Portrait tablets and up */
+
+   @media only screen and (max-width : 1224px) {
+    .jumbotron { height:320px; padding-left:15px; padding-right:15px; }
+    .body-content {  margin-top: 320px;  }
+  }
+
+  @media only screen and (max-width : 1024px) {
+    .jumbotron { height:320px; padding-left:15px; padding-right:15px; }
+    .body-content {  margin-top: 320px;  }
+  }
+
+  /* Desktops and laptops 2 ----------- */
+  @media only screen and (max-width : 992px) {
+    .jumbotron    { height: 340px; padding-left:15px; padding-right:15px;}
+    .body-content { margin-top: 340px; }
+  }
+
+  /* Desktops and laptops 3 ----------- */
+  @media only screen and (max-width : 768px) {
+    .jumbotron    { height: 340px; }
+    .body-content { padding:5; margin-top: 340px; }
+  }
+
+    /* Desktops and laptops 4 ----------- */
+  @media only screen and (max-width : 659px) {
+    .jumbotron    { height: 360px; }
+    .body-content { margin-top: 360px; }
+    .jumbotron h1 { font-size:38px; }
+    p.lead { font-size:0.9em; }
+  }
+
+  @media screen and (max-width: 420px){
+    .jumbotron { height:430px; padding-left:15px; padding-right:15px;  }
+    .body-content { margin-top: 430px;  }
+    .jumbotron h1 { font-size:38px; }
+    .lastupdate { color: #999 !important; }
+    p.lead { font-size:0.9em; }
+  }

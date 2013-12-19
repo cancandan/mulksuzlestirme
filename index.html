@@ -1,1 +1,773 @@
-Hello World !!
+<!DOCTYPE html>
+<html lang="tr">
+
+<!-- Mirrored from mulksuzlestirme.org/projeler/ by HTTrack Website Copier/3.x [XR&CO'2013], Wed, 18 Dec 2013 17:59:28 GMT -->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="'Kentsel dönüşüm' projelerini yapan şirketlerin diğer yatırımları neler? Bu süreçte devlet kurumları ve özel şirketler arasında halkı mülksüzleştiren ne gibi ortaklıkları kuruluyor? Halkın cebinden çıkan vergilerle toplanan kapital, kamusal mülkün yeniden inşası/işletmesi üzerinden hangi sermaye gruplarına aktarılıyor? 3. Havalimanı, 3. Köprü ve Ilısu Barajı (Hasankeyf) gibi mega projelerin yarattığı ekolojik, ekonomik ve sosyal yıkım hangi medya organları üzerinden sansürlenerek toplumsal hafızadan silinmeye çalışılıyor?">
+  <meta name="author" content="">
+  <title>Mülksüzleştirme Projeleri</title>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <!-- <script type="text/javascript" src='assets/js/jquery.js'></script> -->
+  <script type="text/javascript" src='assets/js/vivagraph.js'></script>
+  <script type="text/javascript" src='assets/js/typeahead.min.js'></script>
+  <script type="text/javascript" src="assets/js/hogan-2.0.0.min.js"></script>
+
+  <script src="assets/js/helioslibs/q.min.js"></script>
+  <script src="assets/js/helioslibs/uuid.js"></script>
+  <script src="assets/js/helioslibs/q-comm.js"></script>
+  <script src="assets/js/helios.js"></script>
+  <link href="assets/css/sandbox.css" rel="stylesheet" />
+
+  <script>
+  var rawjson;
+  var graphdb;
+  var g;
+  var data;
+  var idler;
+
+  
+
+  function goster() {
+      resetGraph();    
+      highlightSomeNodes(idler);
+  }
+
+  <!-- Json datasini Helios un anladigi GraphJSON a donusturme ve yukleme -->
+  $($.get(
+  'http://www.corsproxy.com/mulksuzlestirme.org/yonetimkurulu-neo.json?callback=hey',
+    function(response) {
+      rawjson=response;
+      var vertices=[]
+      var edges=[]
+
+      rawjson.nodes.forEach(function(entry) {
+        v={"name":entry.nodeName, "_id": entry.id, "_type": "vertex"};
+        vertices.push(v)
+      });
+
+      rawjson.links.forEach(function(entry) {
+        e={"_type": "edge", "_outV": entry.target, "_inV": entry.source, "_label": entry.type};
+        edges.push(e)
+      });
+
+
+      data = {
+          "graph": {
+              "mode":"NORMAL",
+              "vertices":vertices, "edges":edges}};
+      graphdb = new Helios.GraphDatabase({heliosDBPath:'assets/js/helioslibs/heliosDB.js'});
+      g=graphdb.loadGraphSON(data);   
+
+    }));
+
+
+
+  </script>
+
+  <link href="assets/css/bootstrap.css" rel="stylesheet">
+  <link href="assets/css/main.css" rel="stylesheet">
+  <link href="assets/css/typeahead.js-bootstrap.css" rel="stylesheet">
+
+  <style type="text/css" media="screen">
+    html, body, svg { width: 100%; height: 100%; }
+    body { padding:0; margin:0; }
+    #map {
+      width: 100%;
+      height: 100%;
+      border-bottom: 1px solid #ddd;
+      -webkit-box-shadow: inset 0 -3px 5px rgba(0,0,0,0.055);
+      -moz-box-shadow: inset 0 -3px 5px rgba(0,0,0,0.055);
+      box-shadow: inset 0 -3px 5px rgba(0,0,0,0.055);
+      -webkit-transition: all .2s ease-in-out;
+      -moz-transition: all .2s ease-in-out;
+      -o-transition: all .2s ease-in-out;
+      transition: all .2s ease-in-out;
+      /* fallback */
+      background-color: #E4E6DF;
+      background-image: url('ui/radial_bg.png');
+      background-position: center center;
+      background-repeat: no-repeat;
+      /* Safari 4-5, Chrome 1-9 */
+      /* Can't specify a percentage size? Laaaaaame. */
+      background: -webkit-gradient(radial, center center, 0, center center, 460, from(#FFFFFF), to(#E4E6DF));
+      /* Safari 5.1+, Chrome 10+ */
+      background: -webkit-radial-gradient(circle, #FFFFFF, #E4E6DF);
+      /* Firefox 3.6+ */
+      background: -moz-radial-gradient(circle, #FFFFFF, #E4E6DF);
+      /* IE 10 */
+      background: -ms-radial-gradient(circle, #FFFFFF, #E4E6DF);
+      /* Opera cannot do radial gradients yet */
+    }
+    text {
+      /*font: 10px sans-serif;*/
+      pointer-events: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+    }
+    text.shadow {
+      stroke: #fff;
+      stroke-width: 3px;
+      stroke-opacity: .8;
+    }
+    text.normalText, g.normalText text {
+        display:  block;
+        fill: #000 !important;
+    }
+    g text {
+      /* font-size: 0.95em !important;*/
+      text-shadow:
+          -1px -1px 0 #FFF,
+          1px -1px 0 #FFF,
+          -1px 1px 0 #FFF,
+          1px 1px 0 #FFF !important;
+    }
+    #node-card {
+      display: none;
+      background:#FFFFFF;
+      position: absolute;
+      bottom:0px;
+      right:0px;
+      width:240px;
+      height:300px;
+      overflow-y: auto;
+      padding:10px;
+      border-left:1px solid #ddd;
+      border-top:1px solid #ddd;
+      font-family: Helvetica,Arial;
+      color: #333333;
+    }
+    #node-card #name {
+      /*font-weight: bold;*/
+      font-size: 24px;
+      margin-top:10px;
+      margin-bottom:10px;
+    }
+    #node-card #cost {
+      margin-bottom:10px;
+    }
+    #node-card #crimes {
+      color: red;
+      font-size: 12px;
+      margin-bottom:10px;
+    }
+    #node-card #biennial {
+      color: #40E0D0;
+      font-size: 12px;
+      margin-bottom:10px;
+    }
+    #node-card #olympics {
+      color: #800080;
+      font-size: 12px;
+      margin-bottom:10px;
+    }
+
+    #search {
+      background:#FFFFFF;
+      position: absolute;
+      top:15px;
+      left:40%;
+      /*padding:5px;*/
+    }
+    #graphsearch {
+      background:#FFFFFF;
+      position: absolute;
+      top:15px;
+      left:10%;
+      width:300px;      
+      /*padding:5px;*/
+    }
+    #search .typeahead {
+      width:300px;
+      -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3),0 4px 15px -5px rgba(0, 0, 0, 0.3);
+      -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3),0 4px 15px -5px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3),0 4px 15px -5px rgba(0, 0, 0, 0.3);
+    }
+    p.Company { color:#0A76BE; } /*#3498DB*/
+    p.Project { color:#1C2936; } /*#34495E*/
+    .tt-is-under-cursor p { color:#FFFFFF; }
+
+    /* circle {
+      -webkit-transition-property: opacity;
+      -webkit-transition-duration: 0.20s;
+
+      -moz-transition-property: opacity;
+      -mox-transition-duration: 0.20s;
+
+      -o-transition-property: opacity;
+      -o-transition-duration: 0.20s;
+
+      transition-property: opacity;
+      transition-duration: 0.20s;
+    }*/
+  </style>
+
+  <script type="text/javascript">
+    var graph;
+    var graphics;
+    $(document).ready(function() {
+
+      // Remove scrollbars
+      document.documentElement.style.overflow = 'hidden';  // firefox, chrome
+      document.body.scroll = "no"; // ie only
+
+      // Handle double tap
+      var onDoubleTap = function(el, callback) {
+        var lastTapTime = 0,
+        doubleTapSpeed = 200, // 200 ms between taps
+        handleTapStart = function (e) {
+            if (e.touches.length !== 1) {
+                return; // only single finger counts.
+            }
+            var tapTime = +new Date();
+            if (tapTime - lastTapTime < doubleTapSpeed) {
+                callback();
+            }
+            lastTapTime = tapTime;
+        };
+
+        if (typeof callback === 'function') {
+            el.addEventListener("touchstart", handleTapStart, false);
+        }
+      };
+
+      graph = Viva.Graph.graph();
+
+      var layout = Viva.Graph.Layout.forceDirected(graph, {
+                      springLength : 110
+                      // springCoeff : 0.00010,
+                      // dragCoeff : 0.12,
+                      ,gravity : -1
+                  });
+
+      var srcColor = "#34495E"; // #0024C5
+      var trgColor = "#3498DB"; // #C0392B
+      var edgeColor = "#34495E"; // #7F8C8D
+      var recColor = "#27AE60";
+      var edgeOnOpacity = '1.0';
+      var edgeOffOpacity = '0.2';
+
+      // var img_host = "http://localhost:8888/mulksuzlestirme/assets/logos/"
+      var img_host = "../assets/logos/"
+
+      // var url = "http://localhost:8888/mulksuzlestirme/projeler-neo.json?callback=hey";
+      var url = "http://www.corsproxy.com/mulksuzlestirme.org/projeler-neo.json?callback=hey";
+
+      var focusDisplay = false;
+      var focusNodeId;
+
+      var localnodes = []; // Typeahead localnodes
+
+      $.getJSON(url, function(data){
+        $.each(data.nodes, function(key,val){
+          var node =  { name: val.nodeName,
+                        type: val.type,
+                        image: val.image,
+                        degree: val.degree,
+                        cost: val.cost,
+                        isPinned: val.focus,
+                        preds: val.predictions,
+                        crimes: val.crimes,
+                        olympics: val.olympics,
+                        biennial: val.biennial };
+          if(focusDisplay){
+            graph.addNode(val.id, node);
+          }else{
+            if(val.focus == true){
+              focusNodeId = val.id;
+            }
+            if(val.focus == false){
+              graph.addNode(val.id, node);
+            }
+          }
+          localnodes.push({ id: val.id,
+                            name: val.nodeName,
+                            value: val.nodeName,
+                            type: val.type,
+                            tokens: val.nodeName.toLowerCase().split(" ") });
+        });
+        $.each(data.links, function(key,val){
+          if(focusDisplay){
+            // graph.addLink(val.source, val.target, val.value);
+            graph.addLink(val.source, val.target, {value: val.value, type: val.type});
+          }else{
+            if(val.source != focusNodeId && val.target != focusNodeId){
+              // graph.addLink(val.source, val.target, val.value);
+              graph.addLink(val.source, val.target, {value: val.value, type: val.type});
+            }
+          }
+        });
+        renderer.run();
+      }).success(function() {
+        setTypeaheadData(localnodes);
+      });
+
+      // // Calculate centralities TODO: call back after graph loaded from Ajax
+      // var calculator = Viva.Graph.centrality();
+      // var betweenness = calculator.betweennessCentrality(graph); // betweenness is an array of objects {key: , value: }, where key is a node id
+      // var degree = calculator.degreeCentrality(graph);
+      // console.log(degree);
+
+      graphics = Viva.Graph.View.svgGraphics(),
+      nodeSize = 20,
+
+      setTypeaheadData = function(localdata){
+        $('input.typeahead').typeahead({
+          name: 'names',
+          local: localdata, // [ {id: 4, name: 'Cengiz İnşaat', value: 'Cengiz İnşaat', type: 'Company', tokens: ['Cengiz', 'inşaat']} ],
+          limit: 20,
+          template: [
+                '<p class="{{type}}">{{name}}</p>'
+              ].join(''),
+              engine: Hogan
+        }).on('typeahead:selected', function (obj, datum) {
+          // console.log(obj);
+          // console.log(datum);
+          resetGraph();
+          highlightRelatedNodes(datum['id'], true);
+          muteUnrelatedNodes(datum['id'], true, []);
+        });
+      };
+
+      // Bazi nodelari highlight etmek icin
+      highlightSomeNodes = function(idler) {
+
+        graph.forEachNode(function(node) {
+          //if those nodes are in the idler list hightlight
+          if (idler.indexOf(node.id)==-1) {
+            node.ui.childNodes[0].attr('opacity', '0.1');
+          } else {
+            node.ui.childNodes[0].attr('opacity', '1');
+          }
+        });
+      }
+
+      highlightRelatedNodes = function(nodeId, isOn) {
+        // update the focus node
+        var focusNode = graph.getNode(nodeId);
+        if(isOn){
+          focusNode.ui.childNodes[0]
+                        .attr('fill', 'white')
+                        .attr('stroke', focusNode.data['type'] == "Company" ? trgColor : srcColor);
+        }else{
+          focusNode.ui.childNodes[0]
+                        .attr('stroke', focusNode.data['crimes'] == "" || focusNode.data['crimes'] == null ? 'white' : 'red')
+                        .attr('fill', focusNode.data['type'] == "Company" ? trgColor : srcColor);
+        }
+        // enumerate all related nodes and update link color
+        graph.forEachLinkedNode(nodeId, function(node, link){
+             if (link && link.ui) {
+                 // link.ui is a special property of each link
+                 // points to the link presentation object.
+                 link.ui.attr('stroke-opacity', isOn ? edgeOnOpacity : edgeOffOpacity);
+                 // link.ui.attr('stroke-width', isOn ? Math.sqrt(link.data)*1.2 : Math.sqrt(link.data));
+                 // node.ui.attr('font-weight', isOn ? 'bold' : 'normal');
+                 // node.ui.childNodes[0].attr('display', isOn ? 'display' : 'none');
+                 // node.ui.childNodes[1].attr('display', isOn ? 'display' : 'none');
+                 // if(isOn){ console.dir(node); }
+                 // node.ui.childNodes[0].attr('stroke', isOn ? 'black' : 'gray').attr('fill', isOn ? 'black' : 'gray');
+                 if(isOn){
+                  node.ui.childNodes[0]
+                            .attr('stroke', node.data['crimes'] == "" || node.data['crimes'] == null ? 'white' : 'red')
+                            .attr('fill', node.data['type'] == "Company" ? trgColor : srcColor);
+                 }else{
+                  node.ui.childNodes[0]
+                            .attr('stroke', node.data['crimes'] == "" || node.data['crimes'] == null ? 'white' : 'red')
+                            .attr('fill', node.data['type'] == "Company" ? trgColor : srcColor);
+                 }
+             }
+        });
+      };
+
+      muteUnrelatedNodes = function(nodeId, isOn, preds) {
+          // console.log(preds);
+          graph.forEachUnlinkedNode(nodeId, function(node){
+              // node.ui.attr('font-weight', isOn ? 'bold' : 'normal');
+              // node.ui.childNodes[0].attr('display', isOn ? 'display' : 'none');
+              // node.ui.childNodes[1].attr('display', isOn ? 'display' : 'none');
+
+              // if(nodeId != node.id){
+              //   node.ui.childNodes[0].attr('opacity', isOn ? '0.1' : '1');
+              //   node.ui.childNodes[1].attr('opacity', isOn ? '0.1' : '1');
+              // }
+
+              // preds.indexOf(node.id) != -1
+              // console.log($.inArray(node.id, preds));
+              // console.log(node.id);
+              if($.inArray(node.id, preds) == -1 ){ // higlight rec nodes
+                if (nodeId != node.id){ // mute others
+                  node.ui.childNodes[0].attr('opacity', isOn ? '0.1' : '1');
+                  if(!node.data['image']){
+                    node.ui.childNodes[1].attr('opacity', isOn ? '0.1' : '1');
+                  }
+                }
+                // node.ui.childNodes[0].attr('fill', isOn ? recColor : srcColor);
+                // node.ui.childNodes[1].attr('fill', isOn ? recColor : srcColor);
+              }
+              // else{
+              //   node.ui.childNodes[0].attr('fill', isOn ? recColor : srcColor);
+              //   node.ui.childNodes[1].attr('fill', isOn ? recColor : srcColor);
+              // }
+          });
+      };
+
+      resetGraph = function(){
+        // console.log(graph);
+        graph.forEachNode(function(node){
+          node.ui.childNodes[0].attr('opacity', '1')
+                               .attr('stroke', node.data['crimes'] == "" || node.data['crimes'] == null ? 'white' : 'red')
+                               .attr('fill', node.data['type'] == "Company" ? trgColor : srcColor);
+          if(!node.data['image']){
+            node.ui.childNodes[1].attr('opacity', '1');
+          }
+        });
+        graph.forEachLink(function(link){
+          link.ui.attr('stroke-opacity', edgeOffOpacity);
+        });
+      };
+
+      higlightRecNodes = function(isOn, preds) {
+          var node;
+          for (var i=0; i < preds.length; i++){
+            node = graph.getNode(preds[i]);
+            if (node.data['type'] == "Company"){
+              color = trgColor;
+            }else{
+              color = srcColor;
+            }
+            node.ui.childNodes[0].attr('fill', isOn ? recColor : color);
+            node.ui.childNodes[1].attr('fill', isOn ? recColor : color);
+          }
+      };
+
+      showNodeCard = function(node, isOn){
+        if(isOn){
+          $('#node-card #name').html(node.data['name']);
+          if (node.data['cost'] != null){
+            $('#node-card #cost').html(node.data['cost'] + " Milyon TL");
+          }
+          $('#node-card #crimes').html(node.data['crimes']); // console.log(node.data['crimes']);
+          $('#node-card #olympics').html(node.data['olympics']);
+          $('#node-card #biennial').html(node.data['biennial']);
+          $('#node-card').show();
+        }else{
+          $('#node-card').hide();
+          $('#node-card #name').html("");
+          $('#node-card #cost').html("");
+          $('#node-card #crimes').html("");
+          $('#node-card #olympics').html("");
+          $('#node-card #biennial').html("");
+        }
+      };
+
+      graphics.node(function(node) {
+          // console.log(degree[node.id]);
+          // var size = nodeSize + (node_degree/6);
+          var size = nodeSize + (node.data['degree']/8);
+
+          var attrStrokeColor;
+          if (node.data['crimes'] == "" || node.data['crimes'] == null) {
+            attrStrokeColor = "white";
+          }else if (node.data['olympics']){
+            attrStrokeColor = "#800080";
+          }else if (node.data['biennial']) {
+            attrStrokeColor = "#40E0D0";
+          }else {
+            attrStrokeColor = "red";
+          }
+          // console.log(size);
+          // if (node.data['isPinned'] == true){
+          //     size = nodeSize + 40;
+          // }
+          var ui = Viva.Graph.svg('g'),
+              // Create SVG elements
+              svgText = Viva.Graph.svg('text')
+                                    // .attr('display', 'none')
+                                    .attr('x', (size/2)+13)
+                                    .attr('y', 5+(nodeSize/2))
+                                    .text(node.data['name'])
+                                    .attr('fill', node.data['type'] == "Company" ? trgColor : srcColor)
+                                    .attr('font-family', 'Helvetica,Arial')
+                                    // .attr('font-weight', 'bold')
+                                    .attr('font-size', size/2+'px'),
+              rec = Viva.Graph.svg('rect')
+                                  // .attr('display', 'none')
+                                  .attr('width', size/2)
+                                  .attr('height', size/2)
+                                  .attr('fill', 'black')
+                                  .attr('stroke', 'black')
+                                  .attr('stroke-width', '2'),
+              ellipse = Viva.Graph.svg('ellipse')
+                                  // .attr('display', 'none')
+                                  .attr('cx', size/2)
+                                  .attr('cy', size/2)
+                                  .attr('rx', size/4)
+                                  .attr('ry', size/4)
+                                  .attr('stroke-width', '2')
+                                  .attr('stroke', 'white')
+                                  .attr('fill', node.data['type'] == "Company" ? trgColor : srcColor),
+              circle = Viva.Graph.svg('circle')
+                                  // .attr('display', 'none')
+                                  .attr('cx', nodeSize/2)
+                                  .attr('cy', nodeSize/2)
+                                  .attr('r', size/2)
+                                  .attr('stroke-width', '2')
+                                  .attr('stroke', attrStrokeColor)
+                                  .attr('fill', node.data['type'] == "Company" ? trgColor : srcColor),
+              img = Viva.Graph.svg('image')
+                                  .attr('width', size*2.5)
+                                  .attr('height', size*2.5)
+                                  .link(img_host + node.data['image']);
+        // ui.append(rec);
+        if(node.data['image'] == null){
+          ui.append(circle);
+          ui.append(svgText);
+        }else{
+          ui.append(img);
+        }
+
+        $(ui).hover(function() { // mouse over
+              $('.typeahead').val(""); // clear typeahead
+              // console.log(node.position.x);
+              highlightRelatedNodes(node.id, true);
+              muteUnrelatedNodes(node.id, true, []);
+
+              svgText.attr('display', 'display');
+
+              // rec.attr('display', 'display');
+              $(this).css( 'cursor', 'pointer' );
+
+              showNodeCard(node, true);
+              // renderer.pause();
+
+        }, function() { // mouse out
+              showNodeCard(node, false);
+
+              // highlightRelatedNodes(node.id, false);
+              // muteUnrelatedNodes(node.id, false, []);
+              resetGraph();
+
+              // svgText.attr('display', 'none');
+              // rec.attr('display', 'none');
+              $(this).css( 'cursor', 'default' );
+
+              // remove predictions
+              // node.isPinned = false;
+              // for (var i=0; i < predlinks.length; i++){
+              //   graph.removeLink(predlinks[i]);
+              // }
+              // var preds = node.data['preds'];
+              // higlightRecNodes(false, preds);
+        });
+
+        // $(ui).click(function() {
+        //   $('#node-card').display();
+        // });
+        // on click on canvas
+        // $('#node-card').hide();
+
+        // $(ui).dblclick(function() {
+        //   location.reload();
+        // });
+        return ui;
+      }).placeNode(function(nodeUI, pos, node) {
+          // 'g' element doesn't have convenient (x,y) attributes, instead
+          // we have to deal with transforms: http://www.w3.org/TR/SVG/coords.html#SVGGlobalTransformAttribute
+          nodeUI.attr('transform', 'translate(' + (pos.x - nodeSize/2) + ',' + (pos.y - nodeSize/2) + ')');
+      });
+
+        // var createMarker = function(id) {
+        //       return Viva.Graph.svg('marker')
+        //                        .attr('id', id)
+        //                        .attr('viewBox', "0 0 10 10")
+        //                        .attr('refX', "10")
+        //                        .attr('refY', "5")
+        //                        .attr('markerUnits', "strokeWidth")
+        //                        .attr('markerWidth', "10")
+        //                        .attr('markerHeight', "5")
+        //                        .attr('orient', "auto");
+        //       },
+        //       marker = createMarker('Triangle');
+        //     marker.append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z');
+
+        // // Marker should be defined only once in <defs> child element of root <svg> element:
+        // var defs = graphics.getSvgRoot().append('defs');
+        // defs.append(marker);
+
+        // var geom = Viva.Graph.geom();
+
+        // Render the graph
+        var renderer = Viva.Graph.View.renderer(graph, {
+                graphics : graphics,
+                layout : layout,
+                prerender: 100,
+                container : document.getElementById('map')
+        });
+
+        graphics.link(function(link){
+          if (link.data == 'pred'){
+            return Viva.Graph.svg('line')
+                    .attr('stroke', recColor)
+                    .attr('stroke-opacity', '1')
+                    .attr('stroke-width', 2);
+          }else{
+            return Viva.Graph.svg('line')
+                    .attr('stroke', link.data['type'] == 'owns' ? 'blue' : edgeColor)
+                    .attr('stroke-opacity', edgeOffOpacity)
+                    .attr('stroke-width', Math.sqrt(link.data['value']));
+          }
+        });
+
+        // graphics.link(function(link){
+        //     // Notice the Triangle marker-end attribe:
+        //     return Viva.Graph.svg('path')
+        //                .attr('stroke', 'gray')
+        //                .attr('marker-end', 'url(#Triangle)');
+        // }).placeLink(function(linkUI, fromPos, toPos) {
+        //     // Here we should take care about
+        //     //  "Links should start/stop at node's bounding box, not at the node center."
+
+        //     // For rectangular nodes Viva.Graph.geom() provides efficient way to find
+        //     // an intersection point between segment and rectangle
+        //     var toNodeSize = nodeSize,
+        //         fromNodeSize = nodeSize;
+
+        //     var from = geom.intersectRect(
+        //             // rectangle:
+        //                     fromPos.x - fromNodeSize / 2, // left
+        //                     fromPos.y - fromNodeSize / 2, // top
+        //                     fromPos.x + fromNodeSize / 2, // right
+        //                     fromPos.y + fromNodeSize / 2, // bottom
+        //             // segment:
+        //                     fromPos.x, fromPos.y, toPos.x, toPos.y)
+        //                || fromPos; // if no intersection found - return center of the node
+
+        //     var to = geom.intersectRect(
+        //             // rectangle:
+        //                     toPos.x - toNodeSize / 2, // left
+        //                     toPos.y - toNodeSize / 2, // top
+        //                     toPos.x + toNodeSize / 2, // right
+        //                     toPos.y + toNodeSize / 2, // bottom
+        //             // segment:
+        //                     toPos.x, toPos.y, fromPos.x, fromPos.y)
+        //                 || toPos; // if no intersection found - return center of the node
+
+        //     var data = 'M' + from.x + ',' + from.y +
+        //                'L' + to.x + ',' + to.y;
+
+        //     linkUI.attr("d", data);
+        // });
+
+        // Reset renderer
+        document.body.addEventListener('keydown', function (e) {
+          if (e.which === 32) { // spacebar
+            renderer.reset();
+          }
+        });
+        $('body').dblclick(function() {
+          resetGraph();
+          renderer.reset();
+        });
+        onDoubleTap(document.getElementById('map'), function () {
+          renderer.reset();
+          resetGraph();
+        });
+        // reset typeahead when esc hit
+        document.body.addEventListener('keydown', function (e) {
+          if (e.which === 27) { // esc
+            $('.typeahead').val("");
+            resetGraph();
+          }
+        });
+        // focus search when start typing
+        document.body.addEventListener('keydown', function (e) {
+          // $('.typeahead').focus();
+        });
+        $('input.typeahead').on('focus', function(){
+          $('input.typeahead').val("");
+        });
+
+    });
+  </script>
+
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <div id="node-card">
+    <!-- <div id="image">Image</div> -->
+    <div id="name">Name</div>
+    <!-- <div id="desc">Description</div> -->
+    <!-- <div id="centrality">Centrality</div> -->
+    <div id="attr">
+      <div id="cost"></div>
+      <div id="crimes"></div>
+      <div id="olympics"></div>
+      <div id="biennial"></div>
+      <div id="notes"></div>
+      <div id="references"></div>
+    </div>
+  </div>
+
+<div id="sandbox">sandbox yukleniyor...</div>
+  <div id="search">
+    <input class="typeahead tt-query form-control" type="text" placeholder="Ara" tabindex="1" autocomplete="off" spellcheck="false" dir="auto" style="position:relative; vertical-align:top; background-color:transparent;">
+  </div>
+  
+  
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','http://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-43950013-1', 'mulksuzlestirme.org');
+  ga('send', 'pageview');
+
+</script>
+
+<!-- sandboxla ilgili kod -->
+<!-- The sandbox template -->
+<script type="text/template" id="tplSandbox">
+  <pre class="output"></pre>
+  <div class="input">
+    <textarea rows="1" placeholder="<%= placeholder %>"></textarea>
+  </div>
+  <a href='http://entrendipity.github.io/helios.js/' target="_blank">Komutlar icin HeliosJS sayfasi http://entrendipity.github.io/helios.js/</a>
+</script>
+
+
+<!-- The command/result template (NB whitespace/line breaks matter inside <pre> tag): -->
+<script type="text/template" id="tplCommand"><% if (! _hidden) { %><span class="command"><%= command %></span>
+<span class="prefix"><%= this.resultPrefix %></span><span class="<%= _class %>"><%= result %></span>
+<% } %></script>
+
+
+<script src="assets/js/sandboxlibs/underscore.min.js"></script>
+<script src="assets/js/sandboxlibs/backbone.min.js"></script>
+<script src="assets/js/sandboxlibs/backbone-localstorage.min.js"></script><!-- opt -->
+<!-- <script src="assets/js/sandboxlibs/libs/jquery.min.js"></script> -->
+
+<script src="assets/js/sandbox-console.js"></script>
+<script type="text/javascript">
+  jQuery(document).ready(function($) {
+    // Create the sandbox:
+    window.sandbox = new Sandbox.View({
+      el : $('#sandbox'),
+      model : new Sandbox.Model(),
+      placeholder : "yardim icin :yardim, Ornek graphdb.v(4).id()",
+      helpText : "idler degiskenini graphdb query yaparak doldurun\n\n mesela graphdb.v(4,5).id()\n\n yerlerini grafikte gormek icin, goster()\n fonksiyonunu cagirin\n\n baska bir ornek:\n idler=[3,8,10];goster() \n\n yukardaki alani silmek icin :sil"
+    });
+  });
+</script>
+
+</body>
+
+<!-- Mirrored from mulksuzlestirme.org/projeler/ by HTTrack Website Copier/3.x [XR&CO'2013], Wed, 18 Dec 2013 17:59:34 GMT -->
+</html>
